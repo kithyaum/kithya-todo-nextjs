@@ -15,6 +15,10 @@ type Props = {
   onToggleComplete: (id: string, isCompleted: boolean) => void;
   loading: boolean;
   loadingAction: boolean;
+  editTodo: {
+    id: string;
+    todo: string;
+  } | null;
 };
 
 const TodoList: React.FC<Props> = ({
@@ -24,6 +28,7 @@ const TodoList: React.FC<Props> = ({
   onEdit,
   onDelete,
   onToggleComplete,
+  editTodo,
 }) => {
   console.log("loading", loading);
   return (
@@ -41,6 +46,7 @@ const TodoList: React.FC<Props> = ({
               onDelete={onDelete}
               onToggleComplete={onToggleComplete}
               loadingAction={loadingAction}
+              isEditing={editTodo ? editTodo?.id == todo.id : false}
             />
           </ListItem>
         ))

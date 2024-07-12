@@ -33,7 +33,10 @@ export default function Home() {
   };
 
   const handleEditTodo = (id: string, updatedTodo: string) => {
-    editTodo(id, { todo: updatedTodo, isCompleted: false });
+    editTodo(id, { todo: updatedTodo, isCompleted: false }, false);
+    setEditingTodo(null);
+  };
+  const handleEscapeEditMode = () => {
     setEditingTodo(null);
   };
 
@@ -42,14 +45,18 @@ export default function Home() {
   };
 
   const handleToggleComplete = (id: string, isCompleted: boolean) => {
-    editTodo(id, {
-      todo: todos.find((todo: Todo) => todo.id === id)?.todo || "",
-      isCompleted,
-    });
+    editTodo(
+      id,
+      {
+        todo: todos.find((todo: Todo) => todo.id === id)?.todo || "",
+        isCompleted,
+      },
+      true
+    );
   };
 
   const filteredTodos = todos.filter((todo: Todo) =>
-    todo.todo.toLowerCase().includes(filter.toLowerCase())
+    todo.todo.includes(filter)
   );
 
   return (
@@ -58,13 +65,10 @@ export default function Home() {
         onAddTodo={handleAddTodo}
         editingTodo={editingTodo}
         onUpdateTodo={handleEditTodo}
-        error={error} loading={loadingAction}      />
-
-      {/* <TodoForm
-        onAddTodo={handleAddTodo}
-        editingTodo={editingTodo}
-        onUpdateTodo={handleEditTodo}
-      /> */}
+        error={error}
+        loading={loadingAction}
+        onEscapseEditMode={handleEscapeEditMode}
+      />
       <Input
         type="text"
         placeholder="Filter todos"
@@ -79,6 +83,7 @@ export default function Home() {
         onToggleComplete={handleToggleComplete}
         loading={loading}
         loadingAction={loadingAction}
+        editTodo={editingTodo}
       />
     </Box>
   );

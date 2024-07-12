@@ -1,7 +1,6 @@
 import axios from "axios";
 import { Todo } from "../hooks/useTodos";
 
-// const API_BASE_URL = "https://your-backend-api-url"; // Replace with your actual API base URL
 
 export const fetchTodos = async (): Promise<Todo[]> => {
   try {

@@ -1,66 +1,3 @@
-// "use client";
-// import { Alert, AlertIcon, Button, Input, Stack } from "@chakra-ui/react";
-// import { FormEvent, useEffect, useState } from "react";
-
-// type Props = {
-//   onAddTodo: (todo: string) => void;
-//   editingTodo: { id: string; todo: string } | null;
-//   onUpdateTodo: (id: string, todo: string) => void;
-//   error: string | null;
-// };
-
-// const TodoForm: React.FC<Props> = ({
-//   onAddTodo,
-//   editingTodo,
-//   onUpdateTodo,
-//   error,
-// }) => {
-//   const [todo, setTodo] = useState(editingTodo ? editingTodo.todo : "");
-
-//   useEffect(() => {
-//     if (editingTodo) {
-//       setTodo(editingTodo.todo);
-//     }
-//   }, [editingTodo]);
-
-//   const handleSubmit = (e: FormEvent) => {
-//     e.preventDefault();
-//     if (todo.trim()) {
-//       if (editingTodo) {
-//         onUpdateTodo(editingTodo.id, todo);
-//       } else {
-//         onAddTodo(todo);
-//       }
-//       setTodo("");
-//     } else {
-//       alert("Todo cannot be empty");
-//     }
-//   };
-
-//   return (
-//     <form onSubmit={handleSubmit}>
-//       <Stack direction="row" mb={4}>
-//         <Input
-//           type="text"
-//           value={todo}
-//           onChange={(e) => setTodo(e.target.value)}
-//           placeholder="Add a new todo"
-//         />
-//         <Button type="submit" colorScheme="blue">
-//           {editingTodo ? "Update" : "Add"}
-//         </Button>
-//       </Stack>
-//       {error && (
-//         <Alert status="error">
-//           <AlertIcon />
-//           {error}
-//         </Alert>
-//       )}
-//     </form>
-//   );
-// };
-
-// export default TodoForm;
 import {
   Button,
   FormControl,
@@ -70,7 +7,7 @@ import {
   Input,
   Stack,
 } from "@chakra-ui/react";
-import { FormEvent, useEffect, useState } from "react";
+import React, { FormEvent, useEffect, useRef, useState } from "react";
 
 type Props = {
   onAddTodo: (todo: string) => void;
@@ -78,41 +15,67 @@ type Props = {
   onUpdateTodo: (id: string, todo: string) => void;
   error: string | null;
   loading: boolean;
+  onEscapseEditMode: () => void;
 };
 
 const TodoForm: React.FC<Props> = ({
   onAddTodo,
   onUpdateTodo,
+  onEscapseEditMode,
   editingTodo,
   error,
   loading,
 }) => {
   const [todoText, setTodoText] = useState(editingTodo ? editingTodo.todo : "");
   const [isError, setIsError] = useState(false);
+  const textInput = useRef<HTMLInputElement>(null);
+  const handleFocus = () => {
+    if (textInput.current) {
+      textInput.current.focus();
+    }
+  };
 
+  const handleBlur = () => {
+    if (textInput.current) {
+      textInput.current.blur();
+    }
+  };
+  const handleKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (e) => {
+    if (e.key === "Escape") {
+      handleBlur();
+      setTodoText("");
+      onEscapseEditMode();
+    }
+  };
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (todoText.trim()) {
       if (editingTodo) {
-        onUpdateTodo(editingTodo.id, todoText);
+        onUpdateTodo(editingTodo.id, todoText.trim());
       } else {
-        onAddTodo(todoText);
+        onAddTodo(todoText.trim());
       }
       setTodoText("");
     } else {
       setIsError(true);
     }
   };
+  // const onPressKey = (e: KeyboardEvent) => {
 
+  // };
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTodoText(e.target.value);
     if (e.target.value.trim()) {
       setIsError(false);
     }
   };
+  // useEffect(() => {
+  //   handleFocus();
+  // }, []);
   useEffect(() => {
     if (editingTodo) {
       setTodoText(editingTodo.todo);
+      handleFocus();
     }
   }, [editingTodo]);
 
@@ -122,10 +85,12 @@ const TodoForm: React.FC<Props> = ({
         <FormLabel>Todo</FormLabel>
         <Stack direction="row">
           <Input
+            ref={textInput}
             type="text"
             value={todoText}
             onChange={handleInputChange}
             placeholder="Add a new todo"
+            onKeyDownCapture={handleKeyDown}
           />
           <Button isLoading={loading} type="submit" colorScheme="blue">
             {editingTodo ? "Update" : "Add"}

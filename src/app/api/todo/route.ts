@@ -4,7 +4,11 @@ import { NextRequest, NextResponse } from "next/server";
 const prisma = new PrismaClient();
 
 export async function GET() {
-  const todos = await prisma.todo.findMany();
+  const todos = await prisma.todo.findMany({
+    orderBy: {
+      todo: "asc",
+    },
+  });
   return NextResponse.json(todos);
 }
 

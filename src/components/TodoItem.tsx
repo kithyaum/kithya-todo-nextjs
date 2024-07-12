@@ -22,6 +22,7 @@ type Props = {
   onDelete: (id: string) => void;
   onToggleComplete: (id: string, isCompleted: boolean) => void;
   loadingAction: boolean;
+  isEditing: boolean;
 };
 
 const TodoItem: React.FC<Props> = ({
@@ -30,12 +31,16 @@ const TodoItem: React.FC<Props> = ({
   onEdit,
   onDelete,
   onToggleComplete,
+  isEditing,
 }) => {
   const [hideActionButton, setHideActionButton] = useState(true);
+  console.log("isEditing: ", isEditing);
   return (
     <Box
       p={2}
-      bg="white"
+      className={`${
+        isEditing ? "bg-green-300" : "bg-white"
+      } transition-transform ease-in-out delay-0 duration-100`}
       borderRadius="md"
       shadow="md"
       onMouseEnter={() => setHideActionButton(false)}
@@ -61,6 +66,7 @@ const TodoItem: React.FC<Props> = ({
               <IconButton
                 icon={<EditIcon />}
                 aria-label="Edit Todo"
+                isDisabled={todo.isCompleted}
                 size="sm"
                 isLoading={loadingAction}
                 onClick={() => onEdit(todo)}
